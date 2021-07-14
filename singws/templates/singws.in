@@ -1,0 +1,11 @@
+[singws]
+workspace_version = 0.1.0
+location = /home/sloretz/ws/noetic
+container_location = /home/sloretz/ws/noetic/ros.focal.sandbox
+
+[ref]
+_shell = singularity shell --no-home --bind "${singws:location}/src" --pwd "${singws:location}"
+
+[commands]
+shell = ${ref:_shell} --nv ${singws:container_location}
+rootshell = ${ref:_shell} --fakeroot ${singws:container_location}
