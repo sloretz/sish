@@ -32,15 +32,15 @@ class Config:
 
     @property
     def version(self) -> Version:
-        return Version(self._config['singws']['version'])
+        return Version(self._config['siws']['version'])
 
     @property
     def path(self) -> pathlib.Path:
-        return pathlib.Path(self._config['singws']['path'])
+        return pathlib.Path(self._config['siws']['path'])
 
     @property
     def container(self):
-        return self._config['singws']['container']
+        return self._config['siws']['container']
 
     def commands(self) -> Iterable[Tuple[str, str]]:
         for name, cmd in self._config['commands'].items():

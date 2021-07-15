@@ -7,7 +7,7 @@ import sys
 
 from . import Action
 from . import create_workspace
-from . import find_dot_singws
+from . import find_dot_siws
 from .config import Config
 
 
@@ -30,10 +30,10 @@ def main():
         help='a singularity definition file, path to a sandbox, ...')
     parser_create.set_defaults(func=cli_create_workspace)
 
-    ws_file = find_dot_singws(pathlib.Path().absolute())
+    ws_file = find_dot_siws(pathlib.Path().absolute())
 
     if ws_file:
-        # Add commands from the .singws file
+        # Add commands from the .siws file
         config = Config(ws_file)
         for name, command in config.commands():
             parser_cmd = subparsers.add_parser(name, help=command)

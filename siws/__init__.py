@@ -8,9 +8,9 @@ from typing import Optional
 __version__ = "0.1.0"
 
 
-def find_dot_singws(path : pathlib.Path) -> Optional[pathlib.Path]:
+def find_dot_siws(path : pathlib.Path) -> Optional[pathlib.Path]:
     """
-    Given a path to a directory, return the path to a .singws file in the
+    Given a path to a directory, return the path to a .siws file in the
     closest ancestor including this one.
 
     Returns None if no path exists
@@ -18,11 +18,11 @@ def find_dot_singws(path : pathlib.Path) -> Optional[pathlib.Path]:
     if not path.is_dir():
         raise ValueError(f"expected a directory, but got '{path}'")
 
-    dot_path = path / '.singws'
+    dot_path = path / '.siws'
     if dot_path.exists():
         return dot_path
     elif path.parents:
-        return find_dot_singws(path.parent)
+        return find_dot_siws(path.parent)
 
 
 class Action:
