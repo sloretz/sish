@@ -1,11 +1,15 @@
 [siws]
-workspace_version = 0.1.0
-location = /home/sloretz/ws/noetic
-container_location = /home/sloretz/ws/noetic/ros.focal.sandbox
+version = 0.1.0
+path = /home/osrf/ws/dbi
+container = /home/osrf/ws/dbi/ros.focal.sandbox
+
+# The sandbox was created using the commands
+#   singularity build --fakeroot --sandbox "ros.focal.sandbox" ~/projects/singularity-ros/definition_files/ros.focal.def
+#   singularity exec --fakeroot --writable "ros.focal.sandbox" mkdir -p /home/osrf/ws/dbi/drake-ros
 
 [ref]
-_shell = singularity shell --no-home --bind "${siws:location}/src" --pwd "${siws:location}"
+_shell = singularity shell --no-home --no-mount cwd --bind "${siws:path}/drake-ros" --pwd "${siws:path}"
 
 [commands]
-shell = ${ref:_shell} --nv ${siws:container_location}
-rootshell = ${ref:_shell} --fakeroot ${siws:container_location}
+shell = ${ref:_shell} --nv ${siws:container}
+rootshell = ${ref:_shell} --fakeroot --writable ${siws:container}
