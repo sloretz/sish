@@ -1,25 +1,39 @@
-What does this tool do?
+siws - Singularity Workspaces
+-----------------------------
 
-siws
+``siws`` simplifies creating and opening shells into `Singularity <https://singularity.hpcng.org/>` containers for the purpose of developing software inside of them.
 
-tool create --from path/to/ros.focal.sandbox --bind src .
+How do I use it?
+==================
 
-  create the given folder if it does not already exist
-  creates any bind paths inside the given folder
-  creates a .siws file in the given folder
-    Detect graphics card!
-  builds a singularity sandbox
+First use ``siws create`` to create a container with access to your source code.
+Any time you want to be in that container, use ``siws rootshell`` or ``siws shell``.
+The former opens a shell as the root user, and the latter opens a shell as your current user.
+Use ``rootshell`` when you want to install dependencies, and ``shell`` when you want to build and test your code.
 
-tool shell path/to/siws root
+Here's an example.
 
-tool shell path/to/ros.focal.sandbox
+.. code-block:: console
 
-tool shell 
+  # Make a folder and put some code in it
+  $ mkdir ~/siws_bionic_example/ && cd ~/siws_bionic_example
+  $ git clone https://github.com/octocat/Hello-World.git
+  # ...
+  # Create a container running Ubuntu Bionic that has access to Hello-World
+  $ siws create --from library://ubuntu:18.04 --bind Hello-World ~/siws_bionic_example
+  # ...
+  # Open a shell as root to install important dependencies
+  $ siws rootshell
+  Singularity> apt update && apt install -y cowsay
+  # ...
+  # Exit the shell with Ctrl-D
+  # Open a normal shell and do important work
+  $ siws shell
+  Singularity> cowsay < Hello-World/README
 
-tool rootshell
 
+I've used singularity before - what does this do for me?
+========================================================
 
-.siws
-  file that marks the root of a siws workspace
-  Includes version of the workspace
-  parse with Python's configparser module
+This tool creates a Singularity sandbox and offers shortcuts for getting shells into the container with binds.
+You could do most of what this tool does with bash aliases, but this tool organizes that.
