@@ -36,4 +36,4 @@ I've used singularity before - what does this do for me?
 ========================================================
 
 This tool creates a Singularity sandbox and offers shortcuts for getting shells into the container with binds.
-You could do most of what this tool does with bash aliases, but this tool organizes that.
+You could do most of what this tool does with bash aliases.
