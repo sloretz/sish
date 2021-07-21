@@ -18,7 +18,8 @@ setup(
     license='Apache-2.0',
     install_requires=[
         'argcomplete',
-        'packaging'
+        'packaging',
+        'importlib_resources; python_version < 3.7'
     ],
     entry_points={
         'console_scripts': [

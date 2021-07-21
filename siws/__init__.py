@@ -43,5 +43,36 @@ class Action:
         os.execlp(cmd, cmd, *args)
 
 
-def create_workspace(from_):
-    print("TODO create workspace from", from_)
+class BindSpec:
+
+    __slots__ = ['src', 'dest', 'opts']
+
+    def __init__(self, src, dest=None, opts=None):
+        if opts:
+            if not dest:
+                raise ValueError(
+                    'Bind specifications may only have opts if dest is given')
+            allowed_opts = ('ro', 'rw')
+            if opts not in allowed_opts:
+                raise ValueError(
+                    f'Bind specification opts must be one of {allowed_opts}')
+        self.src = src
+        self.dest = dest
+        self.opts = opts
+
+    @classmethod
+    def fromstr(cls, spec_str):
+        parts = spec_str.split(':')
+        if len(parts) > 3:
+            raise ValueError(
+                'Bind specifications may not have more than 3 parts')
+        return BindSpec(*parts)
+
+    def __repr__(self):
+        return f'<{self.__class__.__module__}.{self.__class__.__name__}({repr(self.src)}, {repr(self.dest)}, {repr(self.opts)})>'  # noqa
+
+    def __str__(self):
+        parts = [self.src, self.dest, self.opts]
+        while parts[-1] is None:
+            parts.pop()
+        return ':'.join(parts)
