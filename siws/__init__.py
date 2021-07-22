@@ -8,7 +8,7 @@ from typing import Optional
 __version__ = "0.1.0"
 
 
-def find_dot_siws(path : pathlib.Path) -> Optional[pathlib.Path]:
+def find_dot_siws(path: pathlib.Path = pathlib.Path().absolute()) -> Optional[pathlib.Path]:  # noqa
     """
     Given a path to a directory, return the path to a .siws file in the
     closest ancestor including this one.

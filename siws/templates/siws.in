@@ -1,17 +1,17 @@
 [siws]
 version = ${siws_version}
-path = ${workspace_path}
-container = ${container_path}
+workspace_path = ${workspace_path}
+
+[containers]
+# Paths to the containers available to this workspace
+${container_paths}
 
 # The sandbox was created using the commands
-${build_commands}
-# TODO(sloretz) delete these comments once `create` works
-#   singularity build --fakeroot --sandbox "ros.focal.sandbox" ~/projects/singularity-ros/definition_files/ros.focal.def
-#   singularity exec --fakeroot --writable "ros.focal.sandbox" mkdir -p /home/osrf/ws/dbi/drake-ros
+${comment_build_commands}
 
 [ref]
 _shell = singularity shell --no-home --no-mount cwd ${binds} --pwd "$${siws:path}"
 
 [commands]
-shell = $${ref:_shell} --nv $${siws:container}
-rootshell = $${ref:_shell} --fakeroot --writable $${siws:container}
+# CLI tool commands and the programs they execute when run to access containers
+${container_commands}

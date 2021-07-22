@@ -1,0 +1,3 @@
+shell = $${ref:_shell} --nv $${containers:${container_name}}
+rootshell = $${ref:_shell} --fakeroot --writable $${containers:${container_name}}
+

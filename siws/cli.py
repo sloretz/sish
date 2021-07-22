@@ -26,7 +26,8 @@ def cli_create_workspace(args):
     for bind in binds:
         if not pathlib.Path(bind.src).resolve().exists():
             raise ValueError(f'Bind source "{bind.src}" does not exist')
-    create_workspace(args.from_, binds)
+
+    create_workspace(args.name, pathlib.Path(args.ws_path), args.from_, binds)
 
 
 def cli_do_action(name, command):
@@ -40,14 +41,20 @@ def main():
     parser_create = subparsers.add_parser(
         'create', help='create a singularity workspace')
     parser_create.add_argument(
+        '--name', metavar='NAME', default='container0',
+        help='a name to give to the container (default: container0)')
+    parser_create.add_argument(
         '--from', metavar='BUILD_SPEC', dest='from_', required=True,
         help='a singularity definition file, path to a sandbox, ...')
     parser_create.add_argument(
         '--bind', metavar='src[:dest[:opts]]', dest='binds', action='append',
         help='a path or bind path spec to make available in the container')
+    parser_create.add_argument(
+        'ws_path', metavar='PATH', action='store',
+        help='the path to the siws workspace to create')
     parser_create.set_defaults(func=cli_create_workspace)
 
-    ws_file = find_dot_siws(pathlib.Path().absolute())
+    ws_file = find_dot_siws()
 
     if ws_file:
         # Add commands from the .siws file

@@ -8,27 +8,60 @@ import shlex
 from string import Template
 import subprocess
 
+from . import __version__
 
-def create_workspace(from_, binds):
-    print("TODO create workspace from", from_, "with binds", binds)
-    # from_ will get passed to singularity build
-    # from_ needs some parsing to come up with a sandbox name :-/
-    # binds will have their destination created inside the container with 
-    #   singularity exec
-    # binds will be included in the ref:_shell
 
-    template_path = files('siws.templates').joinpath('siws.in')
-    print("Reading from template path", template_path)
+def execute_and_log(command, log_file_base):
+    """
+    Execute a command and output the results to
+    log_file_base + '.stdout' and log_file_base + '.stderr'
+    """
+    results = subprocess.run(
+        command,
+        stdout=open(log_file_base + '.stdout', 'w'),
+        stderr=open(log_file_base + '.stderr', 'w'),
+        check=True)
 
-    command = [
+
+def pretty_cmd(command):
+    return " ".join(map(shlex.quote, command))
+
+
+def create_workspace(name, ws_path, from_, binds):
+    # TODO(sloretz) allow extending a .siws with multiple containers
+
+    main_template_args = {
+        'siws_version': __version__,
+        'workspace_path': str(ws_path.resolve()),
+        'container_paths': None,
+        'comment_build_commands': [],
+        'binds': [],
+        'container_commands': []
+    }
+    main_template = files('siws.templates').joinpath('siws.in')
+    # Commands template arguments
+    #   container_name
+    commands_template = files('siws.templates').joinpath('container_commands.in')  # noqa
+    # Paths template arguments
+    #   container_name
+    #   container_path
+    paths_template = files('siws.templates').joinpath('container_paths.in')
+
+    sandbox_path = str(ws_path.joinpath(name + '.sandbox'))
+
+    build_command = [
         'singularity',
         'build',
         '--fakeroot',
         '--sandbox',
-        shlex.quote('TODO SANDBOX PATH WITH QUOTES'),
-        shlex.quote(from_)
+        sandbox_path,
+        from_
     ]
-    print(" ".join(command))
+    # print(pretty_cmd(build_command))
+    main_template_args['comment_build_commands'].append(build_command)
+    # TODO(sloretz) uncomment this when ready :)
+    # TODO(sloretz) pick better log output spot
+    # execute_and_log(build_command, '/tmp/' + name)
 
     for bind in binds:
         destination = bind.dest
@@ -38,15 +71,31 @@ def create_workspace(from_, binds):
         # resolve relative paths to absolute paths
         destination = str(pathlib.Path(destination).resolve())
 
-        command = [
+        exec_command = [
             'singularity',
             'exec',
             '--fakeroot',
             '--writable',
-            shlex.quote('TODO SANDBOX PATH WITH QUOTES'),
+            sandbox_path,
             'mkdir',
             '-p',
-            # hmm - need to assert dest is absolute path?
-            shlex.quote(destination)
+            # TODO(sloretz) what does singularity do with relative paths in binds?
+            destination
         ]
-        print(" ".join(command))
+        main_template_args['comment_build_commands'].append(exec_command)
+        # print(pretty_cmd(exec_command))
+        # TODO(sloretz) uncomment when ready :)
+        # subprocess.run(exec_command, check=True)
+        main_template_args['binds'].append(str(bind))
+
+    # Now write a .siws file!
+    if main_template_args['binds']:
+        main_template_args['binds'] = ','.join(main_template_args['binds'])
+        main_template_args['binds'] = '--bind ' + main_template_args['binds']
+
+    commands = []
+    for cmd in main_template_args['comment_build_commands']:
+        commands.append("#   " + pretty_cmd(cmd))
+    main_template_args['comment_build_commands'] = "\n".join(commands)
+
+    print(main_template_args)
