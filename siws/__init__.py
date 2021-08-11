@@ -8,9 +8,12 @@ from typing import Optional
 __version__ = "0.1.0"
 
 
-def find_dot_siws(path: pathlib.Path = pathlib.Path().absolute()) -> Optional[pathlib.Path]:  # noqa
+WORKSPACE_FOLDER_NAME = '_siws_'
+
+
+def find_siws_folder(path: pathlib.Path = pathlib.Path().absolute()) -> Optional[pathlib.Path]:  # noqa
     """
-    Given a path to a directory, return the path to a .siws file in the
+    Given a path to a directory, return the path to a siws folder in the
     closest ancestor including this one.
 
     Returns None if no path exists
@@ -18,11 +21,21 @@ def find_dot_siws(path: pathlib.Path = pathlib.Path().absolute()) -> Optional[pa
     if not path.is_dir():
         raise ValueError(f"expected a directory, but got '{path}'")
 
-    dot_path = path / '.siws'
-    if dot_path.exists():
-        return dot_path
+    ws_path = path / WORKSPACE_FOLDER_NAME
+    if ws_path.exists():
+        return ws_path
     elif path.parents:
-        return find_dot_siws(path.parent)
+        return find_siws_folder(path.parent)
+
+
+def config_path(siws_path: pathlib.Path):
+    """Given a path to a siws folder, return the path to the main config file."""
+    return ws_path / 'siws_config.ini'
+
+
+def container_path(siws_path: pathlib.Path, name: str):
+    """Get the path to a container in the siws folder."""
+    return siws_path / f'{name}.sandbox'
 
 
 class Action:

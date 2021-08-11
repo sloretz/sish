@@ -19,7 +19,7 @@ setup(
     install_requires=[
         'argcomplete',
         'packaging',
-        'importlib_resources; python_version < 3.7'
+        'importlib_resources; python_version < "3.7"'
     ],
     entry_points={
         'console_scripts': [
