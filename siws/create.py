@@ -13,6 +13,12 @@ from . import container_path
 from . import WORKSPACE_FOLDER_NAME
 
 
+def get_template(name):
+    template_folder = files('siws.templates')
+    template_path = template_folder.joinpath(name)
+    return Template(template_path.read_text())
+
+
 def execute_and_log(command, log_file_base):
     """
     Execute a command and output the results to
@@ -29,11 +35,31 @@ def pretty_cmd(command):
     return " ".join(map(shlex.quote, command))
 
 
-def create_workspace(name, ws_path, from_, binds):
+def create_workspace(ws_path):
+    """Given a path with no siws workspace, create one."""
     siws_folder = ws_path / WORKSPACE_FOLDER_NAME
     if siws_folder.exists():
-        # TODO(sloretz) allow extending a .siws with multiple containers
-        raise RuntimeError(f'Cannot create container here because {siws_folder} already exists')  # noqa
+        raise RuntimeError(f'Cannot create workspace here because {siws_folder} already exists')  # noqa
+
+    # Create _siws_ folder
+    siws_folder.mkdir(parents=True)
+
+    # Create siws.ini
+    ini_location = siws_folder / 'siws.ini'
+    ini_content = get_template('siws.ini.in').substitute(
+        siws_version=__version__, siws_folder=str(siws_folder.resolve()))
+    ini_location.write_text(ini_content)
+
+    # create commands/ folder
+    commands_folder = siws_folder / 'commands'
+    commands_folder.mkdir()
+
+
+def create_container(name, siws_folder, from_, binds):
+    # I would like a class for accessing the siws workspace
+    # shows what commands are available
+    # Add a command to the workspace
+    # Add a container to the workspace (get path to build container at)
 
     container_folder = container_path(siws_folder, name)
     build_commands = []

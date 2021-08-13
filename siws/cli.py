@@ -7,10 +7,10 @@ import sys
 
 from . import Action
 from . import BindSpec
-from . import config_path
 from . import find_siws_folder
 from .config import Config
 from .create import create_workspace
+from .create import create_container
 
 
 def cli_create_workspace(args):
@@ -28,7 +28,11 @@ def cli_create_workspace(args):
         if not pathlib.Path(bind.src).resolve().exists():
             raise ValueError(f'Bind source "{bind.src}" does not exist')
 
-    create_workspace(args.name, pathlib.Path(args.ws_path), args.from_, binds)
+    # TODO(sloretz) only create the workspace if it doesn't exist
+    ws_path = pathlib.Path('.')
+    create_workspace(ws_path)
+
+    create_container(args.name, ws_path, args.from_, binds)
 
 
 def cli_do_action(name, command):
@@ -50,21 +54,19 @@ def main():
     parser_create.add_argument(
         '--bind', metavar='src[:dest[:opts]]', dest='binds', action='append',
         help='a path or bind path spec to make available in the container')
-    parser_create.add_argument(
-        'ws_path', metavar='PATH', action='store',
-        help='the path to the siws workspace to create')
     parser_create.set_defaults(func=cli_create_workspace)
 
     ws_folder = find_siws_folder()
 
-    if ws_folder:
-        config_file = config_path(ws_folder)
-        if config_file:
-            # Add commands from the config file
-            config = Config(ws_file)
-            for name, command in config.commands():
-                parser_cmd = subparsers.add_parser(name, help=command)
-                parser_cmd.set_defaults(func=cli_do_action(name, command))
+    # TODO add commands from command folder
+    # if ws_folder:
+    #     config_file = config_path(ws_folder)
+    #     if config_file:
+    #         # Add commands from the config file
+    #         config = Config(ws_file)
+    #         for name, command in config.commands():
+    #             parser_cmd = subparsers.add_parser(name, help=command)
+    #             parser_cmd.set_defaults(func=cli_do_action(name, command))
 
     argcomplete.autocomplete(parser)
     args = parser.parse_args()

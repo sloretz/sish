@@ -28,11 +28,6 @@ def find_siws_folder(path: pathlib.Path = pathlib.Path().absolute()) -> Optional
         return find_siws_folder(path.parent)
 
 
-def config_path(siws_path: pathlib.Path):
-    """Given a path to a siws folder, return the path to the main config file."""
-    return ws_path / 'siws_config.ini'
-
-
 def container_path(siws_path: pathlib.Path, name: str):
     """Get the path to a container in the siws folder."""
     return siws_path / f'{name}.sandbox'
