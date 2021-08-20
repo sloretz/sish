@@ -3,14 +3,13 @@
 import argcomplete
 import argparse
 import pathlib
+from string import Template
 import sys
 
 from . import Action
 from . import BindSpec
-from . import find_siws_folder
-from .config import Config
-from .create import create_workspace
 from .create import create_container
+from .workspace import Workspace
 
 
 def cli_create_workspace(args):
@@ -22,17 +21,16 @@ def cli_create_workspace(args):
                 # Allow that here too by splitting into multiple specs
                 binds.extend(map(BindSpec.fromstr, bind.split(',')))
             else:
-                binds.append(BindSpec(bind))
+                binds.append(BindSpec.fromstr(bind))
 
     for bind in binds:
         if not pathlib.Path(bind.src).resolve().exists():
             raise ValueError(f'Bind source "{bind.src}" does not exist')
 
     # TODO(sloretz) only create the workspace if it doesn't exist
-    ws_path = pathlib.Path('.')
-    create_workspace(ws_path)
+    ws = Workspace.create(pathlib.Path('.'))
 
-    create_container(args.name, ws_path, args.from_, binds)
+    create_container("container0", ws, args.from_, binds)
 
 
 def cli_do_action(name, command):
@@ -46,9 +44,6 @@ def main():
     parser_create = subparsers.add_parser(
         'create', help='create a singularity workspace')
     parser_create.add_argument(
-        '--name', metavar='NAME', default='container0',
-        help='a name to give to the container (default: container0)')
-    parser_create.add_argument(
         '--from', metavar='BUILD_SPEC', dest='from_', required=True,
         help='a singularity definition file, path to a sandbox, ...')
     parser_create.add_argument(
@@ -56,17 +51,17 @@ def main():
         help='a path or bind path spec to make available in the container')
     parser_create.set_defaults(func=cli_create_workspace)
 
-    ws_folder = find_siws_folder()
+    ws = Workspace.find_nearest(pathlib.Path('.'))
 
-    # TODO add commands from command folder
-    # if ws_folder:
-    #     config_file = config_path(ws_folder)
-    #     if config_file:
-    #         # Add commands from the config file
-    #         config = Config(ws_file)
-    #         for name, command in config.commands():
-    #             parser_cmd = subparsers.add_parser(name, help=command)
-    #             parser_cmd.set_defaults(func=cli_do_action(name, command))
+    if ws:
+        for name, command_tmpl_str in ws.commands:
+            command_args = {
+                'cwd': pathlib.Path('.').resolve()
+            }
+            command = Template(command_tmpl_str).substitute(command_args)
+
+            parser_cmd = subparsers.add_parser(name, help=command)
+            parser_cmd.set_defaults(func=cli_do_action(name, command))
 
     argcomplete.autocomplete(parser)
     args = parser.parse_args()

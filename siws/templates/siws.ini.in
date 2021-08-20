@@ -1,3 +1,2 @@
 [siws]
 version = ${siws_version}
-location = ${siws_folder}

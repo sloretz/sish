@@ -1,6 +1,12 @@
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
 import os
 import pathlib
 import shlex
+from string import Template
 from typing import Optional
 
 
@@ -8,29 +14,14 @@ from typing import Optional
 __version__ = "0.1.0"
 
 
-WORKSPACE_FOLDER_NAME = '_siws_'
+def get_template(name):
+    template_folder = files('siws.templates')
+    template_path = template_folder.joinpath(name)
+    return Template(template_path.read_text())
 
 
-def find_siws_folder(path: pathlib.Path = pathlib.Path().absolute()) -> Optional[pathlib.Path]:  # noqa
-    """
-    Given a path to a directory, return the path to a siws folder in the
-    closest ancestor including this one.
-
-    Returns None if no path exists
-    """
-    if not path.is_dir():
-        raise ValueError(f"expected a directory, but got '{path}'")
-
-    ws_path = path / WORKSPACE_FOLDER_NAME
-    if ws_path.exists():
-        return ws_path
-    elif path.parents:
-        return find_siws_folder(path.parent)
-
-
-def container_path(siws_path: pathlib.Path, name: str):
-    """Get the path to a container in the siws folder."""
-    return siws_path / f'{name}.sandbox'
+def pretty_command(command):
+    return " ".join(map(shlex.quote, command))
 
 
 class Action:
@@ -55,7 +46,7 @@ class BindSpec:
 
     __slots__ = ['src', 'dest', 'opts']
 
-    def __init__(self, src, dest=None, opts=None):
+    def __init__(self, src: pathlib.Path, dest: Optional[pathlib.Path] = None, opts=None):
         if opts:
             if not dest:
                 raise ValueError(
@@ -64,8 +55,8 @@ class BindSpec:
             if opts not in allowed_opts:
                 raise ValueError(
                     f'Bind specification opts must be one of {allowed_opts}')
-        self.src = src
-        self.dest = dest
+        self.src = src.resolve()
+        self.dest = dest if dest is None else dest.resolve()
         self.opts = opts
 
     @classmethod
@@ -74,6 +65,11 @@ class BindSpec:
         if len(parts) > 3:
             raise ValueError(
                 'Bind specifications may not have more than 3 parts')
+        # src is a path
+        parts[0] = pathlib.Path(parts[0])
+        if len(parts) > 1:
+            # dest is a path
+            parts[1] = pathlib.Path(parts[1])
         return BindSpec(*parts)
 
     def __repr__(self):
@@ -83,4 +79,4 @@ class BindSpec:
         parts = [self.src, self.dest, self.opts]
         while parts[-1] is None:
             parts.pop()
-        return ':'.join(parts)
+        return ':'.join([str(p) for p in parts])

@@ -1,0 +1,4 @@
+# This is a log of commands run to setup this container
+# Original CLI
+# ${cli}
+${build_commands}
