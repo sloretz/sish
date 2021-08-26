@@ -1,12 +1,5 @@
-try:
-    from importlib.resources import files
-except ImportError:
-    from importlib_resources import files
-
-import os
 import pathlib
 import shlex
-from string import Template
 from typing import Optional
 
 
@@ -14,32 +7,8 @@ from typing import Optional
 __version__ = "0.1.0"
 
 
-def get_template(name):
-    template_folder = files('siws.templates')
-    template_path = template_folder.joinpath(name)
-    return Template(template_path.read_text())
-
-
 def pretty_command(command):
     return " ".join(map(shlex.quote, command))
-
-
-class Action:
-
-    __slots__ = ['name', 'command']
-
-    def __init__(self, name, command):
-        self.name = name
-        self.command = command
-
-    def __call__(self):
-        """
-        Execute the action, replacing the current process.
-    
-        This function does not return.
-        """
-        cmd, *args = shlex.split(self.command)
-        os.execlp(cmd, cmd, *args)
 
 
 class BindSpec:

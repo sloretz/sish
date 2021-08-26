@@ -23,7 +23,9 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'siws = siws.cli:main',
+            'create-sish-container = siws.cli:main_create_sish_container',
+            'sish = siws.cli:main_sish',
+            'rsish = siws.cli:main_rsish',
         ]
     }
 )
