@@ -1,2 +1,2 @@
-singularity shell --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --nv ${sandbox_folder}
+singularity shell --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --nv --writable ${sandbox_folder}
 

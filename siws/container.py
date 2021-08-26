@@ -63,6 +63,40 @@ class Container:
             ]
             build_commands.append(exec_command)
 
+        # Create mount points for nvidia files that can't be mounted with a
+        # writable container with --nv option
+        # See https://github.com/hpcng/singularity/issues/5169
+        extra_mount_points = [
+            '/usr/bin/nvidia-smi',
+            '/usr/bin/nvidia-debugdump',
+            '/usr/bin/nvidia-persistenced',
+            '/usr/bin/nvidia-cuda-mps-control',
+            '/usr/bin/nvidia-cuda-mps-server',
+            '/var/run/nvidia-persistenced/socket',
+        ]
+        for mount_point in extra_mount_points:
+            # Create a directory if needed
+            build_commands.append([
+                'singularity',
+                'exec',
+                '--fakeroot',
+                '--writable',
+                str(sandbox_folder),
+                'mkdir',
+                '-p',
+                str(pathlib.Path(mount_point).parent)
+            ])
+            # Touch the file
+            build_commands.append([
+                'singularity',
+                'exec',
+                '--fakeroot',
+                '--writable',
+                str(sandbox_folder),
+                'touch',
+                mount_point
+            ])
+
         # actually runs the commands
         for command in build_commands:
             print("Executing: ", pretty_command(command))
