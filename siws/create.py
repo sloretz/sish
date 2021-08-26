@@ -54,14 +54,6 @@ def create_container(name, workspace: Workspace, from_, binds):
         print("Executing: ", pretty_command(command))
         subprocess.run(command, check=True)
 
-    # Write a log of what commands were run
-    create_log_template = get_template('create_log.txt.in')
-    create_log_template_args = {
-        'cli': pretty_command(sys.argv),
-        'build_commands': "\n".join(map(pretty_command, build_commands))
-    }
-    create_log_path.write_text(create_log_template.substitute(create_log_template_args))
-
     # Create command files for this container
     binds = '--bind ' + ','.join(map(str, binds))
 
