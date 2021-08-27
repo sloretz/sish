@@ -1,6 +1,7 @@
 import os
 import pathlib
 import shlex
+from string import Template
 import subprocess
 
 from . import pretty_command
@@ -133,5 +134,10 @@ class Container:
         cmd_path = self._folder / 'commands' / command_name
         if not cmd_path.exists():
             raise RuntimeError(f'{self.name} does not support {command_name}')
-        cmd, *args = shlex.split(cmd_path.read_text())
+        template_str = cmd_path.read_text()
+        args = {
+            'cwd': pathlib.Path('.').resolve()
+        }
+        command = Template(template_str).substitute(args)
+        cmd, *args = shlex.split(command)
         os.execlp(cmd, cmd, *args)
