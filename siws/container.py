@@ -110,6 +110,7 @@ class Container:
         shell_template_args = {
             'binds': binds,
             'sandbox_folder': str(sandbox_folder),
+            'container_name': name,
         }
         shell_cmd = get_template('shell.in').substitute(shell_template_args)
         (commands_folder / 'sish').write_text(shell_cmd)
@@ -117,6 +118,7 @@ class Container:
         rootshell_template_args = {
             'binds': binds,
             'sandbox_folder': str(sandbox_folder),
+            'container_name': name,
         }
         rootshell_cmd = get_template('rootshell.in').substitute(shell_template_args)
         (commands_folder / 'rsish').write_text(rootshell_cmd)
