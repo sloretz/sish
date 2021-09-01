@@ -57,7 +57,7 @@ Open a normal shell and get to work
   $ sish bionic
 
 Still need access to the Ubuntu Focal container?
-It's still there, but now you need to use it's name when opening shells
+It's still there, but now you need to use the container's name when opening shells.
 
 .. code-block:: console
 
