@@ -1,20 +1,20 @@
 from setuptools import setup
-from siws import __version__
+from sish import __version__
 
 with open("README.rst", "r") as fin:
     long_description = fin.read()
 
 setup(
-    name='siws',
+    name='sish',
     version=__version__,
-    packages=['siws'],
-    package_data={'siws': ['templates/*.tmpl']},
+    packages=['sish'],
+    package_data={'sish': ['templates/*.tmpl']},
     author='Shane Loretz',
     author_email='shane.loretz@gmail.com',
     description='CLI tools for writing code in singularity containers.',
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://github.com/sloretz/siws",
+    url="https://github.com/sloretz/sish",
     license='Apache-2.0',
     install_requires=[
         'argcomplete',
@@ -23,9 +23,9 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'create-sish-container = siws.cli:main_create_sish_container',
-            'sish = siws.cli:main_sish',
-            'rsish = siws.cli:main_rsish',
+            'create-sish-container = sish.cli:main_create_sish_container',
+            'sish = sish.cli:main_sish',
+            'rsish = sish.cli:main_rsish',
         ]
     }
 )
