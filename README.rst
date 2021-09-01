@@ -1,39 +1,74 @@
-siws - Singularity Workspaces
------------------------------
+sish - Singularity Shells for Developing code
+---------------------------------------------
 
-``siws`` simplifies creating and opening shells into `Singularity <https://singularity.hpcng.org/>` containers for the purpose of developing software inside of them.
+``sish`` simplifies creating and opening shells into `Singularity <https://singularity.hpcng.org/>` containers for the use case of developing software inside of them.
 
-How do I use it?
-==================
+Tutorial
+========
 
-First use ``siws create`` to create a container with access to your source code.
-Any time you want to be in that container, use ``siws rootshell`` or ``siws shell``.
-The former opens a shell as the root user, and the latter opens a shell as your current user.
-Use ``rootshell`` when you want to install dependencies, and ``shell`` when you want to build and test your code.
+Part 1: The simple case - one container
++++++++++++++++++++++++++++++++
 
-Here's an example.
+Create a folder with some source code.
 
 .. code-block:: console
 
-  # Make a folder and put some code in it
-  $ mkdir ~/siws_bionic_example/ && cd ~/siws_bionic_example
-  $ git clone https://github.com/octocat/Hello-World.git
-  # ...
-  # Create a container running Ubuntu Bionic that has access to Hello-World
-  $ siws create --from library://ubuntu:18.04 --bind Hello-World ~/siws_bionic_example
-  # ...
-  # Open a shell as root to install important dependencies
-  $ siws rootshell
-  Singularity> apt update && apt install -y cowsay
-  # ...
-  # Exit the shell with Ctrl-D
-  # Open a normal shell and do important work
-  $ siws shell
-  Singularity> cowsay < Hello-World/README
+  $ mkdir -p my_workspace/src
+  $ cd my_workspace
 
+Let's make an Ubuntu Focal container **in this folder** and give it the name ``focal``.
+
+.. code-block:: console
+
+  $ create-sish-container --bind src/ --from docker://ubuntu:focal --name focal
+
+Open a root shell and install any extra software you need in the container.
+
+.. code-block:: console
+
+  $ rsish
+
+Open a normal shell and get to work
+
+.. code-block:: console
+
+  $ sish
+
+
+Part 2: Multiple containers in one folder
++++++++++++++++++++++++++++++++++++++++++
+
+Let's make an Ubuntu Bionic container **in this folder** and give it the name ``bionic``.
+
+.. code-block:: console
+
+  $ create-sish-container --bind src/ --from docker://ubuntu:bionic --name focal
+
+Open a root shell and install any extra software you need in the container.
+
+.. code-block:: console
+
+  $ rsish bionic
+
+Open a normal shell and get to work
+
+.. code-block:: console
+
+  $ sish bionic
+
+Still need access to the Ubuntu Focal container?
+It's still there, but now you need to use it's name when opening shells
+
+.. code-block:: console
+
+  $ sish focal
 
 I've used singularity before - what does this do for me?
 ========================================================
 
-This tool creates a Singularity sandbox and offers shortcuts for getting shells into the container with binds.
-You could do most of what this tool does with bash aliases.
+This tool creates a Singularity sandbox with reasonable options and binds for developing code.
+Sandboxes are persistent, so no need to worry about shutting down your computer and losing your work.
+It uses ``--fakeroot`` so you don't need to use ``sudo`` or be root to start a container.
+It assumes an NVidia graphics card is installed and passes in the ``-nv`` flag.
+Maybe that's not a true assumption for your machine.
+PRs are welcome :)
