@@ -42,7 +42,7 @@ Let's make an Ubuntu Bionic container **in this folder** and give it the name ``
 
 .. code-block:: console
 
-  $ create-sish-container --bind src/ --from docker://ubuntu:bionic --name focal
+  $ create-sish-container --bind src/ --from docker://ubuntu:bionic --name bionic
 
 Open a root shell and install any extra software you need in the container.
 
