@@ -50,7 +50,11 @@ class Workspace:
         sish_folder = ws_path / WORKSPACE_FOLDER_NAME
         if sish_folder.exists():
             raise RuntimeError(f'Cannot create workspace here because {sish_folder} already exists')  # noqa
-    
+
+        # TODO(sloretz) relocatable workspaces?
+        # Get absolute path
+        sish_folder = sish_folder.resolve()
+
         # Create _sish_/
         sish_folder.mkdir(parents=True)
     
@@ -67,7 +71,7 @@ class Workspace:
 
 
     def __init__(self, sish_folder: pathlib.Path):
-        self._sish_folder = sish_folder
+        self._sish_folder = sish_folder.resolve()
         self._config = ConfigParser(interpolation=ExtendedInterpolation())
         self._config.read(sish_folder / 'sish.ini')
 
