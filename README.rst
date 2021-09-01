@@ -1,7 +1,7 @@
 sish - Singularity Shells for Developing code
 ---------------------------------------------
 
-``sish`` simplifies creating and opening shells into `Singularity <https://singularity.hpcng.org/>` containers for the use case of developing software inside of them.
+``sish`` simplifies creating and opening shells into `Singularity <https://singularity.hpcng.org/>`_ containers for the use case of developing software inside of them.
 
 Tutorial
 ========
@@ -69,6 +69,6 @@ I've used singularity before - what does this do for me?
 This tool creates a Singularity sandbox with reasonable options and binds for developing code.
 Sandboxes are persistent, so no need to worry about shutting down your computer and losing your work.
 It uses ``--fakeroot`` so you don't need to use ``sudo`` or be root to start a container.
-It assumes an NVidia graphics card is installed and passes in the ``-nv`` flag.
+It assumes an NVidia graphics card is installed and passes in the ``--nv`` flag.
 Maybe that's not a true assumption for your machine.
 PRs are welcome :)
