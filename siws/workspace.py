@@ -13,7 +13,7 @@ from .templates import get_template
 from packaging.version import Version
 
 
-WORKSPACE_FOLDER_NAME = '_siws_'
+WORKSPACE_FOLDER_NAME = '_sish_'
 
 
 class IncompatibleVersion(Exception):
@@ -38,38 +38,38 @@ class Workspace:
 
         path = path.resolve()
 
-        siws_folder = path / WORKSPACE_FOLDER_NAME
-        if siws_folder.exists():
-            return cls(siws_folder)
+        sish_folder = path / WORKSPACE_FOLDER_NAME
+        if sish_folder.exists():
+            return cls(sish_folder)
         elif path.parents:
             return cls.find_nearest(path.parent)
 
     @classmethod
     def create(cls, ws_path) -> _Workspace:
-        """Given a path with no siws workspace, create one."""
-        siws_folder = ws_path / WORKSPACE_FOLDER_NAME
-        if siws_folder.exists():
-            raise RuntimeError(f'Cannot create workspace here because {siws_folder} already exists')  # noqa
+        """Given a path with no sish workspace, create one."""
+        sish_folder = ws_path / WORKSPACE_FOLDER_NAME
+        if sish_folder.exists():
+            raise RuntimeError(f'Cannot create workspace here because {sish_folder} already exists')  # noqa
     
-        # Create _siws_/
-        siws_folder.mkdir(parents=True)
+        # Create _sish_/
+        sish_folder.mkdir(parents=True)
     
-        # Create _siws_/siws.ini
-        ini_location = siws_folder / 'siws.ini'
-        ini_content = get_template('siws.ini.in').substitute(siws_version=__version__)
+        # Create _sish_/sish.ini
+        ini_location = sish_folder / 'sish.ini'
+        ini_content = get_template('sish.ini.in').substitute(version=__version__)
         ini_location.write_text(ini_content)
     
-        # Create _siws_/containers/
-        containers_folder = siws_folder / 'containers'
+        # Create _sish_/containers/
+        containers_folder = sish_folder / 'containers'
         containers_folder.mkdir()
 
-        return cls(siws_folder)
+        return cls(sish_folder)
 
 
-    def __init__(self, siws_folder: pathlib.Path):
-        self._siws_folder = siws_folder
+    def __init__(self, sish_folder: pathlib.Path):
+        self._sish_folder = sish_folder
         self._config = ConfigParser(interpolation=ExtendedInterpolation())
-        self._config.read(siws_folder / 'siws.ini')
+        self._config.read(sish_folder / 'sish.ini')
 
         self._compatible_version_check()
 
@@ -83,24 +83,24 @@ class Workspace:
 
     @property
     def version(self) -> Version:
-        """Get the version of siws used to create this workspace."""
-        return Version(self._config['siws']['version'])
+        """Get the version of sish used to create this workspace."""
+        return Version(self._config['sish']['version'])
 
     @property
     def location(self) -> pathlib.Path:
-        """Get the path to the _siws_ folder."""
-        return pathlib.Path(self._siws_folder)
+        """Get the path to the _sish_ folder."""
+        return pathlib.Path(self._sish_folder)
 
     @property
     def base_container_folder(self) -> pathlib.Path:
-        return self._siws_folder / 'containers'
+        return self._sish_folder / 'containers'
 
     @property
     def containers(self) -> Tuple[pathlib.Path]:
-        paths = tuple((self._siws_folder / 'containers').iterdir())
+        paths = tuple((self._sish_folder / 'containers').iterdir())
         return tuple([Container(p) for p in paths])
 
     def get_container(self, name) -> Container:
-        container_folder = self._siws_folder / 'containers' / name
+        container_folder = self._sish_folder / 'containers' / name
         if container_folder.exists():
             return Container(container_folder)

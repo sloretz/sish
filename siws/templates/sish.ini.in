@@ -1,2 +1,2 @@
-[siws]
-version = ${siws_version}
+[sish]
+version = ${version}
