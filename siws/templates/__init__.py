@@ -6,6 +6,6 @@ except ImportError:
 from string import Template
 
 def get_template(name):
-    template_folder = files('siws.templates')
+    template_folder = files('sish.templates')
     template_path = template_folder.joinpath(name)
     return Template(template_path.read_text())
