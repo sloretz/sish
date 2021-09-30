@@ -54,6 +54,7 @@ class Container:
             exec_command = [
                 'singularity',
                 'exec',
+                '--contain',
                 '--fakeroot',
                 '--writable',
                 str(sandbox_folder),
