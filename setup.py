@@ -1,3 +1,4 @@
+from setuptools import find_packages()
 from setuptools import setup
 from sish import __version__
 
@@ -7,7 +8,7 @@ with open("README.rst", "r") as fin:
 setup(
     name='sish',
     version=__version__,
-    packages=['sish'],
+    packages=find_packages(),
     package_data={'sish': ['templates/*.tmpl']},
     author='Shane Loretz',
     author_email='shane.loretz@gmail.com',
