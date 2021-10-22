@@ -9,7 +9,7 @@ setup(
     name='sish',
     version=__version__,
     packages=find_packages(),
-    package_data={'sish': ['templates/*.tmpl']},
+    package_data={'sish': ['templates/*.in']},
     author='Shane Loretz',
     author_email='shane.loretz@gmail.com',
     description='CLI tools for writing code in singularity containers.',
