@@ -106,7 +106,9 @@ class Container:
 
         # Create files for commands this container will support
         commands_folder.mkdir()
-        binds = '--bind ' + ','.join(map(str, binds))
+        binds = ''
+        if len(binds) > 0:
+            binds = '--bind ' + ','.join(map(str, binds))
 
         shell_template_args = {
             'binds': binds,
