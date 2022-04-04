@@ -1,1 +1,1 @@
-singularity shell --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --fakeroot --writable --env PS1="${container_name}:\u> " ${sandbox_folder}
+apptainer shell --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --fakeroot --writable --env PS1="${container_name}:\u> " ${sandbox_folder}

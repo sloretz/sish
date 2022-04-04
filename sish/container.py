@@ -17,7 +17,7 @@ class Container:
         :param name: the name of the container to create
         :param container_folder:
             a base path inside the workspace to create containers
-        :param from_: a singularity build specification
+        :param from_: apptainer build specification
         :param binds: binds to be used inside a container when spawning shells
         """
         # Make the container directory
@@ -26,7 +26,7 @@ class Container:
             raise RuntimeError(f'Cannot create container with {name} because it already exists')  # noqa
         container_folder.mkdir()
 
-        # create a _sandbox_ folder which the singularity sandbox will live
+        # create a _sandbox_ folder which the apptainer sandbox will live
         sandbox_folder = container_folder / "_sandbox_"
         # create a commands/ folder for commands this container supports
         commands_folder = container_folder/ "commands"
@@ -35,7 +35,7 @@ class Container:
         build_commands = []
 
         build_commands.append([
-            'singularity',
+            'apptainer',
             'build',
             '--fakeroot',
             '--sandbox',
@@ -52,7 +52,7 @@ class Container:
             destination = str(pathlib.Path(destination).resolve())
 
             exec_command = [
-                'singularity',
+                'apptainer',
                 'exec',
                 '--contain',
                 '--fakeroot',
@@ -60,7 +60,7 @@ class Container:
                 str(sandbox_folder),
                 'mkdir',
                 '-p',
-                # TODO(sloretz) what does singularity do with relative paths in binds?
+                # TODO(sloretz) what does apptainer do with relative paths in binds?
                 destination
             ]
             build_commands.append(exec_command)
@@ -79,7 +79,7 @@ class Container:
         for mount_point in extra_mount_points:
             # Create a directory if needed
             build_commands.append([
-                'singularity',
+                'apptainer',
                 'exec',
                 '--fakeroot',
                 '--writable',
@@ -90,7 +90,7 @@ class Container:
             ])
             # Touch the file
             build_commands.append([
-                'singularity',
+                'apptainer',
                 'exec',
                 '--fakeroot',
                 '--writable',

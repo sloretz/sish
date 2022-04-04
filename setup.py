@@ -12,7 +12,7 @@ setup(
     package_data={'sish': ['templates/*.in']},
     author='Shane Loretz',
     author_email='shane.loretz@gmail.com',
-    description='CLI tools for writing code in singularity containers.',
+    description='CLI tools for writing code in apptainer containers.',
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/sloretz/sish",

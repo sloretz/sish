@@ -48,11 +48,11 @@ def _main_container_command(command_name, help_text):
 def main_create_sish_container():
     """Main entrypoint for  create-sish-container command."""
     parser = argparse.ArgumentParser(
-        description='tool for creating a container in a singularity workspace')
+        description='tool for developing code in Apptainer containers')
 
     parser.add_argument(
         '--from', metavar='BUILD_SPEC', dest='from_', required=True,
-        help='a singularity definition file, path to a sandbox, ...')
+        help='a definition file, path to a sandbox, ...')
     parser.add_argument(
         '--name', metavar='NAME', dest='name', required=True,
         help='name given to the container')
@@ -67,7 +67,7 @@ def main_create_sish_container():
     if args.binds:
         for bind in args.binds:
             if ',' in bind:
-                # Singularity supports multiple bind specs separated by a comma
+                # Apptainer supports multiple bind specs separated by a comma
                 # Allow that here too by splitting into multiple specs
                 binds.extend(map(BindSpec.fromstr, bind.split(',')))
             else:
