@@ -3,20 +3,25 @@
 import argcomplete
 import argparse
 import pathlib
+import sys
 
 from . import BindSpec
 from .container import Container
 from .workspace import Workspace
 
 
+class UsageError(RuntimeError):
+    pass
+
+
 def main_sish():
     """Main entrypoint for  sish command."""
-    _main_container_command('sish', 'open a shell into a container')
+    return _main_container_command('sish', 'open a shell into a container')
 
 
 def main_rsish():
     """Main entrypoint for  rsish command."""
-    _main_container_command('rsish', 'open a root shell into a container')
+    return _main_container_command('rsish', 'open a root shell into a container')
 
 
 def _main_container_command(command_name, help_text):
@@ -32,12 +37,29 @@ def _main_container_command(command_name, help_text):
 
     ws = Workspace.find_nearest(pathlib.Path('.'))
     if ws is None:
-        raise RuntimeError(f'You must call create-sish-container before {command_name} will work')
+        print(f'No sish workspace here - create one with create-sish-container first', file=sys.stderr)
+        return 1
 
     if args.container is None:
+        which = 0
         if len(ws.containers) != 1:
-            raise RuntimeError(f'{command_name} needs a container name because this workspace has multiple of them')  # noqa
-        container = ws.containers[0]
+            which = None
+            while which not in range(len(ws.containers)):
+                print('Which container?')
+                for i, container in enumerate(ws.containers):
+                    print(f' {i}: {container.name}')
+                which_str = input('(0): ').strip()
+                if len(which_str) == 0:
+                    which = 0
+                else:
+                    try:
+                        which = int(which_str)
+                    except ValueError:
+                        print("Invalid option", file=sys.stderr)
+        container = ws.containers[which]
+    elif args.container not in ws.containers:
+        print(f'No such container: {args.container}', file=sys.stderr)
+        return 1
     else:
         container = ws.get_container(args.container)
 
