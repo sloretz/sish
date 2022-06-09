@@ -57,11 +57,11 @@ def _main_container_command(command_name, help_text):
                     except ValueError:
                         print("Invalid option", file=sys.stderr)
         container = ws.containers[which]
-    elif args.container not in ws.containers:
-        print(f'No such container: {args.container}', file=sys.stderr)
-        return 1
     else:
         container = ws.get_container(args.container)
+        if container is None:
+            print(f'No such container: {args.container}', file=sys.stderr)
+            return 1
 
     # Does not return
     container.exec_command(command_name)
