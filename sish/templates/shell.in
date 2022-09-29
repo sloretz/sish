@@ -1,2 +1,2 @@
-apptainer shell --cleanenv --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --nv --writable --env PS1="${container_name}:\u> " ${sandbox_folder}
+apptainer shell --no-home --no-mount cwd ${binds} --pwd "$${cwd}" --nv --writable --env PS1="${container_name}:\u> " ${sandbox_folder}
 
