@@ -24,6 +24,27 @@ def main_rsish():
     return _main_container_command('rsish', 'open a root shell into a container')
 
 
+def _which_container(choices) -> str:
+    if len(choices) == 1:
+        return choices[0]
+
+    which = None
+    while which not in range(len(choices)):
+        print('Which container?')
+        for i, container in enumerate(choices):
+            print(f' {i}: {container.name}')
+        which_str = input('(0): ').strip()
+        if len(which_str) == 0:
+            which = 0
+            break
+        try:
+            which = int(which_str)
+        except ValueError:
+            print("Invalid option", file=sys.stderr)
+
+    return choices[which]
+
+
 def _main_container_command(command_name, help_text):
     parser = argparse.ArgumentParser(description=help_text)
     parser.add_argument(
@@ -41,27 +62,22 @@ def _main_container_command(command_name, help_text):
         return 1
 
     if args.container is None:
-        which = 0
-        if len(ws.containers) != 1:
-            which = None
-            while which not in range(len(ws.containers)):
-                print('Which container?')
-                for i, container in enumerate(ws.containers):
-                    print(f' {i}: {container.name}')
-                which_str = input('(0): ').strip()
-                if len(which_str) == 0:
-                    which = 0
-                else:
-                    try:
-                        which = int(which_str)
-                    except ValueError:
-                        print("Invalid option", file=sys.stderr)
-        container = ws.containers[which]
+        container = _which_container(ws.containers)
     else:
-        container = ws.get_container(args.container)
-        if container is None:
-            print(f'No such container: {args.container}', file=sys.stderr)
+        possible_containers = []
+        for pc in ws.containers:
+            if pc.name.startswith(args.container):
+                possible_containers.append(pc)
+        if not possible_containers:
+            print(f'No container starts with text: {args.container}', file=sys.stderr)
             return 1
+
+        container = _which_container(possible_containers)
+        print(f"{command_name}: {args.container} -> {container.name}")
+
+    if container is None:
+        print(f'No such container: {args.container}', file=sys.stderr)
+        return 1
 
     # Does not return
     container.exec_command(command_name)
